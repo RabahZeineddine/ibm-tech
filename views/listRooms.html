@@ -24,6 +24,21 @@
 	</nav>
 	<div class="container">
 		<div class="row">
+			<% if(typeof(error) !== 'undefined') { %>
+				<div class="col-md-10 col-md-offset-1" >
+					<div class="alert alert-warning alert-dismissible" role="alert">
+		  				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  				 <%= error %>
+					</div>
+				</div>
+			<% }else if(typeof(alertMessage) !== 'undefined' ){ %>
+				<div class="col-md-10 col-md-offset-1" >
+					<div class="alert alert-success alert-dismissible" role="alert">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							 <%= alertMessage %>
+					</div>
+				</div>
+				<% } %>
 			<div class="page-header" id="page-header">
 
 			</div>

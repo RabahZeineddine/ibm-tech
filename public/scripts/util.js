@@ -37,7 +37,8 @@ function xhrPut(url, data, callback, errback){
 	xhr.onreadystatechange = function(){
 		if(xhr.readyState == 4){
 			if(xhr.status == 200){
-				callback();
+                callback();
+                
 			}else{
 				errback('service not available');
 			}

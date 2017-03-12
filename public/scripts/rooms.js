@@ -91,7 +91,7 @@ function updateRoom(){
   }
 
   xhrPut(REST_DATA_EDIT, data, function() {
-    console.log('updated: ',data);
+      window.location.href = '/list';
   },function(err){
     console.error(err);
   });
