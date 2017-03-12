@@ -2,7 +2,7 @@
 
 This application contolrs IBM's TVs using Bluemix Cloudant NoSQL DB service and node.js.  It helps IBM Tech organize their rooms tv's pictures depending on raspberry's ip. The UI talks to a RESTful Express backend API.
 
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://github.com/RabahZeineddine/ibm-tech)
+[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/RabahZeineddine/ibm-tech)
 
 ## Run the app locally
 
