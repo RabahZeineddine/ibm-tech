@@ -444,6 +444,9 @@ app.get('/api/rooms/list', function (request, response) {
                                 response.write(JSON.stringify(rooms));
                                 console.log('ending response..');
                                 response.end();
+                            }else{
+                                response.write(JSON.stringify(rooms));
+                                response.end();
                             }
                         }
                         else {
