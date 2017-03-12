@@ -1,8 +1,8 @@
-# Node.js Cloudant Sample
+# IBM Tech TV's control app 
 
-This application demonstrates how to use the Bluemix Cloudant NoSQL DB service.  It helps users organize their favorite files. The UI talks to a RESTful Express CRUD backend API.
+This application contolrs IBM's TVs using Bluemix Cloudant NoSQL DB service and node.js.  It helps IBM Tech organize their rooms tv's pictures depending on raspberry's ip. The UI talks to a RESTful Express backend API.
 
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/IBM-Bluemix/nodejs-cloudant)
+[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://github.com/RabahZeineddine/ibm-tech)
 
 ## Run the app locally
 
