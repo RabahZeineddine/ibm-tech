@@ -14,14 +14,54 @@ footer{
 	width: 100%;
 	height: 60px;
 	background-color: #222222;
-	display: flex;
-	align-items: center;
+    text-align: center;
+    
+    
+}
+footer p{
+    color: #fff;
+    margin-top: 20px;
 }
 
 .authentication_panel{
 	margin-top: 100px;
 }
-.table-img{
+
+.hover_edit_div{
+    position: absolute;
+    opacity: 0;
+    width: 150px;
+    height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.hover_edit_div a{
+    color: #fff;
+}
+.hover_edit_div a:hover{
+    color: #d6d6d6;
+}
+.img_div{
 	width: 150px;
-	height: 150px;
+
+}
+.img_td{
+    width: 200px;
+}
+.img_td{
+    position: relative;
+}
+
+.img_div:hover .hover_edit_div{
+    animation: picOpAnimation;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    background-color: rgba(88, 88, 88, 0.5);
+}
+
+
+@keyframes picOpAnimation{
+    from{height:0;opacity:0;}
+    to{height:90%;opacity:1;}
 }

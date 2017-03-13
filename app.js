@@ -79,211 +79,12 @@ function initDBConnection() {
     db = cloudant.use(dbCredentials.dbName);
 }
 initDBConnection();
-//app.get('/listRooms', routes.listRooms);
 app.get('/', routes.index);
 app.get('/accessDenied', routes.accessDenied);
-
-function createResponseData(id, name, value, attachments) {
-    var responseData = {
-        id: id
-        , name: sanitizeInput(name)
-        , value: sanitizeInput(value)
-        , attachements: []
-    };
-    attachments.forEach(function (item, index) {
-        var attachmentData = {
-            content_type: item.type
-            , key: item.key
-            , url: '/api/favorites/attach?id=' + id + '&key=' + item.key
-        };
-        responseData.attachements.push(attachmentData);
-    });
-    return responseData;
-}
 
 function sanitizeInput(str) {
     return String(str).replace(/&(?!amp;|lt;|gt;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
-var saveDocument = function (id, name, value, response) {
-    if (id === undefined) {
-        // Generated random id
-        id = '';
-    }
-    db.insert({
-        name: name
-        , value: value
-    }, id, function (err, doc) {
-        if (err) {
-            console.log(err);
-            response.sendStatus(500);
-        }
-        else response.sendStatus(200);
-        response.end();
-    });
-}
-app.get('/api/favorites/attach', function (request, response) {
-    var doc = request.query.id;
-    var key = request.query.key;
-    db.attachment.get(doc, key, function (err, body) {
-        if (err) {
-            response.status(500);
-            response.setHeader('Content-Type', 'text/plain');
-            response.write('Error: ' + err);
-            response.end();
-            return;
-        }
-        response.status(200);
-        response.setHeader("Content-Disposition", 'inline; filename="' + key + '"');
-        response.write(body);
-        response.end();
-        return;
-    });
-});
-app.post('/api/favorites/attach', multipartMiddleware, function (request, response) {
-    console.log("Upload File Invoked..");
-    console.log('Request: ' + JSON.stringify(request.headers));
-    var id;
-    db.get(request.query.id, function (err, existingdoc) {
-        var isExistingDoc = false;
-        if (!existingdoc) {
-            id = '-1';
-        }
-        else {
-            id = existingdoc.id;
-            isExistingDoc = true;
-        }
-        var name = sanitizeInput(request.query.name);
-        var value = sanitizeInput(request.query.value);
-        var file = request.files.file;
-        var newPath = './public/uploads/' + file.name;
-        var insertAttachment = function (file, id, rev, name, value, response) {
-            fs.readFile(file.path, function (err, data) {
-                if (!err) {
-                    if (file) {
-                        db.attachment.insert(id, file.name, data, file.type, {
-                            rev: rev
-                        }, function (err, document) {
-                            if (!err) {
-                                console.log('Attachment saved successfully.. ');
-                                db.get(document.id, function (err, doc) {
-                                    console.log('Attachements from server --> ' + JSON.stringify(doc._attachments));
-                                    var attachements = [];
-                                    var attachData;
-                                    for (var attachment in doc._attachments) {
-                                        if (attachment == value) {
-                                            attachData = {
-                                                "key": attachment
-                                                , "type": file.type
-                                            };
-                                        }
-                                        else {
-                                            attachData = {
-                                                "key": attachment
-                                                , "type": doc._attachments[attachment]['content_type']
-                                            };
-                                        }
-                                        attachements.push(attachData);
-                                    }
-                                    var responseData = createResponseData(id, name, value, attachements);
-                                    console.log('Response after attachment: \n' + JSON.stringify(responseData));
-                                    response.write(JSON.stringify(responseData));
-                                    response.end();
-                                    return;
-                                });
-                            }
-                            else {
-                                console.log(err);
-                            }
-                        });
-                    }
-                }
-            });
-        }
-        if (!isExistingDoc) {
-            existingdoc = {
-                name: name
-                , value: value
-                , create_date: new Date()
-            };
-            // save doc
-            db.insert({
-                name: name
-                , value: value
-            }, '', function (err, doc) {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    existingdoc = doc;
-                    console.log("New doc created ..");
-                    console.log(existingdoc);
-                    insertAttachment(file, existingdoc.id, existingdoc.rev, name, value, response);
-                }
-            });
-        }
-        else {
-            console.log('Adding attachment to existing doc.');
-            console.log(existingdoc);
-            insertAttachment(file, existingdoc._id, existingdoc._rev, name, value, response);
-        }
-    });
-});
-app.post('/api/favorites', function (request, response) {
-    console.log("Create Invoked..");
-    console.log("Name: " + request.body.name);
-    console.log("Value: " + request.body.value);
-    // var id = request.body.id;
-    var name = sanitizeInput(request.body.name);
-    var value = sanitizeInput(request.body.value);
-    saveDocument(null, name, value, response);
-});
-app.delete('/api/favorites', function (request, response) {
-    console.log("Delete Invoked..");
-    var id = request.query.id;
-    // var rev = request.query.rev; // Rev can be fetched from request. if
-    // needed, send the rev from client
-    console.log("Removing document of ID: " + id);
-    console.log('Request Query: ' + JSON.stringify(request.query));
-    db.get(id, {
-        revs_info: true
-    }, function (err, doc) {
-        if (!err) {
-            db.destroy(doc._id, doc._rev, function (err, res) {
-                // Handle response
-                if (err) {
-                    console.log(err);
-                    response.sendStatus(500);
-                }
-                else {
-                    response.sendStatus(200);
-                }
-            });
-        }
-    });
-});
-app.put('/api/favorites', function (request, response) {
-    console.log("Update Invoked..");
-    var id = request.body.id;
-    var name = sanitizeInput(request.body.name);
-    var value = sanitizeInput(request.body.value);
-    console.log("ID: " + id);
-    db.get(id, {
-        revs_info: true
-    }, function (err, doc) {
-        if (!err) {
-            console.log(doc);
-            doc.name = name;
-            doc.value = value;
-            db.insert(doc, doc.id, function (err, doc) {
-                if (err) {
-                    console.log('Error inserting data\n' + err);
-                    return 500;
-                }
-                return 200;
-            });
-        }
-    });
-});
 app.get('/list', function (request, response) {
     if (request.session.user_token && request.session.user_token == CLOUDANT_TOKEN) {
         //Give access to the user or refresh page
@@ -306,6 +107,7 @@ app.get('/list', function (request, response) {
         }
     }
     else {
+        request.session.user_token = '';
         request.session.error = 'Access denied, try again with a valid token.';
         response.redirect('/accessDenied');
     }
@@ -324,7 +126,7 @@ app.get('/api/rooms/token', function (request, response) {
         if (len == 0) {
             //No Docs found.
             //push token doc
-            var docName = 'rooms_token';
+            var docName = 'rooms';
             var docToken = CLOUDANT_TOKEN;
             db.insert({
                 name: docName
@@ -375,46 +177,6 @@ app.get('/api/rooms/token', function (request, response) {
         }
     });
 });
-app.get('/api/favorites', function (request, response) {
-    console.log("Get method invoked.. ")
-    db = cloudant.use(dbCredentials.dbName);
-    var docList = [];
-    var i = 0;
-    db.list(function (err, body) {
-        if (!err) {
-            if (len == 0) {}
-            else {
-                body.rows.forEach(function (document) {
-                    db.get(document.id, {
-                        revs_info: true
-                    }, function (err, doc) {
-                        if (!err) {
-                            if (doc['_attachments']) {
-                                var responseData = createResponseData(doc._id, doc.name, doc.value, attachments);
-                            }
-                            else {
-                                var responseData = createResponseData(doc._id, doc.name, doc.value, []);
-                            }
-                            docList.push(responseData);
-                            i++;
-                            if (i >= len) {
-                                response.write(JSON.stringify(docList));
-                                console.log('ending response...');
-                                response.end();
-                            }
-                        }
-                        else {
-                            console.log(err);
-                        }
-                    });
-                });
-            }
-        }
-        else {
-            console.log(err);
-        }
-    });
-});
 app.get('/api/rooms/list', function (request, response) {
     console.log("Get rooms method invoked..");
     db = cloudant.use(dbCredentials.dbName);
@@ -439,15 +201,11 @@ app.get('/api/rooms/list', function (request, response) {
                                             , "text": doc['rooms'][room]['text']
                                         });
                                     }
-                                    console.log(room + ":" + JSON.stringify(doc['rooms'][room]));
                                 }
-                                response.write(JSON.stringify(rooms));
-                                console.log('ending response..');
-                                response.end();
-                            }else{
-                                response.write(JSON.stringify(rooms));
-                                response.end();
                             }
+                            response.write(JSON.stringify(rooms));
+                            console.log('ending response..');
+                            response.end();
                         }
                         else {
                             console.log(err);
@@ -463,36 +221,42 @@ app.put('/api/rooms/edit', function (request, response) {
     var id_room = request.body.id;
     var name_room = sanitizeInput(request.body.name);
     var ip_room = request.body.ip;
-    console.log("ID: " + CLOUDANT_DOCUMENT_ID);
-    db.get(CLOUDANT_DOCUMENT_ID, {
-        revs_info: true
-    }, function (err, doc) {
-        if (!err) {
-            var rooms = doc.rooms;
-            var len = Object.keys(doc.rooms).length;
-            for (var room in rooms) {
-                if (rooms[room]['id'] == id_room) {
-                    rooms[room]['ip'] = ip_room;
-                    rooms[room]['name'] = name_room;
+    //Make change if the user is authenticated
+    if (request.session.user_token && request.session.user_token == CLOUDANT_TOKEN) {
+        db.get(CLOUDANT_DOCUMENT_ID, {
+            revs_info: true
+        }, function (err, doc) {
+            if (!err) {
+                var rooms = doc.rooms;
+                for (var room in rooms) {
+                    if (rooms[room]['id'] == id_room) {
+                        rooms[room]['ip'] = ip_room;
+                        rooms[room]['name'] = name_room;
+                    }
                 }
-            }
-            doc.rooms = rooms;
-            db.insert(doc, doc.id, function (err, doc) {
-                if (err) {
-                    console.log('Error inserting data\n ' + err);
-                    request.session.error = 'Error on updating.Try again later!';
-                    response.write('false');
+                doc.rooms = rooms;
+                db.insert(doc, doc.id, function (err, doc) {
+                    if (err) {
+                        console.log('Error inserting data\n ' + err);
+                        request.session.error = 'Error on updating.Try again later!';
+                        response.write('false');
+                        response.end();
+                    }
+                    request.session.alertMessage = 'Room updated successfully';
+                    response.write('true');
                     response.end();
-                }
-                request.session.alertMessage = 'Room updated successfully';
-                response.write('true');
-                response.end();
-            });
-        }
-        else {
-            console.log(err);
-        }
-    });
+                });
+            }
+            else {
+                console.log(err);
+            }
+        });
+    }
+    else {
+        request.session.user_token = '';
+        request.session.error = 'Access denied, try again with a valid token.';
+        response.redirect('/accessDenied');
+    }
 });
 
 function getCloudantInfo() {
@@ -520,21 +284,117 @@ function getCloudantInfo() {
         }
     });
 }
+//This method return the room image, if the room exists if not, it creates a new room with defualt ibm image :)
 app.get('/rooms/img', function (request, response) {
+    getCloudantInfo();
     var name = sanitizeInput(request.query.room);
     var ip = sanitizeInput(request.query.ip);
     var token = sanitizeInput(request.query.token);
-    getCloudantInfo();
+    var img;
     if (token.localeCompare(CLOUDANT_TOKEN) != 0) {
-        response.send("Access Denied! ");
+        response.sendStatus(403);
     }
     else {
-        var img = fs.readFileSync('public/images/' + name + '.jpg');
-        response.writeHead(200, {
-            'Content-Type': 'image/jpg'
+        //Check if room exists
+        var exists = false;
+        var last_id;
+        db = cloudant.use(dbCredentials.dbName);
+        var rooms = []
+        db.list(function (err, body) {
+            if (!err) {
+                var len = body.rows.length;
+                console.log('total # of docs -> ' + len);
+                if (len != 0) {
+                    body.rows.forEach(function (document) {
+                        db.get(document.id, {
+                            revs_info: true
+                        }, function (err, doc) {
+                            if (!err) {
+                                if (doc['rooms']) {
+                                    var rooms = doc.rooms;
+                                    for (var room in rooms) {
+                                        if (rooms[room]['name'].localeCompare(name) == 0) {
+                                            console.log('Room already exists');
+                                            exists = true;
+                                            //Change the ip for the new one
+                                            rooms[room]['ip'] = ip;
+                                        }
+                                        last_id = rooms[room]['id'];
+                                    }
+                                    if (!exists) {
+                                        last_id = parseInt(last_id) + 1;
+                                        var name_room = "Room_" + last_id;
+                                        //Create a new room if it does not exist! get the image coordenates later..
+                                        rooms[name_room] = {
+                                            "id": last_id
+                                            , "ip": ip
+                                            , "name": name
+                                            , "text": "IBM"
+                                        };
+                                        console.log('New Room has been added');
+                                        fs.linkSync("public/images/default_room.jpg", "public/images/Rooms/" + name + ".jpg");
+                                        img = fs.readFileSync('public/images/' + name + '.jpg');
+                                    }
+                                    doc.rooms = rooms;
+                                    console.log(rooms);
+                                    db.insert(doc, doc.id, function (err, doc) {
+                                        if (err) {
+                                            console.log('Error inserting data\n ' + err);
+                                            img = fs.readFileSync('public/images/Rooms/default_room.jpg');
+                                            console.log('ending updates..');
+                                            response.writeHead(200, {
+                                                'Content-Type': 'image/jpg'
+                                            });
+                                            response.end(img, 'binary');
+                                        }
+                                        else {
+                                            console.log('Data updated successfully!');
+                                            img = fs.readFileSync('public/images/Rooms/' + name + '.jpg');
+                                            console.log('ending updates..');
+                                            response.writeHead(200, {
+                                                'Content-Type': 'image/jpg'
+                                            });
+                                            response.end(img, 'binary');
+                                        }
+                                    });
+                                }
+                                //    
+                            }
+                            else {
+                                img = fs.readFileSync('public/images/Rooms/default_room.jpg');
+                                console.log('ending updates..');
+                                response.writeHead(200, {
+                                    'Content-Type': 'image/jpg'
+                                });
+                                response.end(img, 'binary');
+                                console.log(err);
+                            }
+                        });
+                    });
+                }
+                else {
+                    img = fs.readFileSync('public/images/Rooms/default_room.jpg');
+                    console.log('ending updates..');
+                    response.writeHead(200, {
+                        'Content-Type': 'image/jpg'
+                    });
+                    response.end(img, 'binary');
+                }
+            }
+            else {
+                img = fs.readFileSync('public/images/Rooms/default_room.jpg');
+                console.log('ending updates..');
+                response.writeHead(200, {
+                    'Content-Type': 'image/jpg'
+                });
+                response.end(img, 'binary');
+            }
         });
-        response.end(img, 'binary');
     }
+});
+app.get('/logout', function (request, response) {
+    request.session.destroy();
+    response.redirect('/');
 });
 app.get('/rooms', function (request, response) {
     //link /rooms?token=Token&room=Name&ip=IP
@@ -544,7 +404,7 @@ app.get('/rooms', function (request, response) {
     var update_fleg = false;
     getCloudantInfo();
     if (token.localeCompare(CLOUDANT_TOKEN) != 0) {
-        response.send("Access Denied! ");
+        response.sendStatus(403);
     }
     else {
         db.get(CLOUDANT_DOCUMENT_ID, {

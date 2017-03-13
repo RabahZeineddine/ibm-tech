@@ -11,7 +11,7 @@ function encodeUriAndQuotes(untrustedStr) {
 
 
 function login(button){
-	button.innerHTML = "Verificando...";
+	button.innerHTML = "Verificando <img src='images/loader.gif'/>";
 	verifyToken();
 //	button.innerHTML = "Confirmar";
 }
@@ -326,19 +326,11 @@ function saveChange(contentNode, callback) {
 	}
 }
 
-function toggleServiceInfo() {
-	var node = document.getElementById('vcapservices');
-	node.style.display = node.style.display == 'none' ? '' : 'none';
-}
 
-function toggleAppInfo() {
-	var node = document.getElementById('appinfo');
-	node.style.display = node.style.display == 'none' ? '' : 'none';
-}
 
 function showLoadingMessage() {
 	document.getElementById('loadingImage').innerHTML = "Loading data "
-			+ "<img height=\"100\" width=\"100\" src=\"images/loading.gif\"></img>";
+			+ "<img height=\"50\" width=\"50\" src=\"images/loading.gif\"></img>";
 }
 
 function stopLoadingMessage() {

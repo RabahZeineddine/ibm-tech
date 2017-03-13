@@ -21,15 +21,15 @@ xhrGet(REST_DATA , function(data){
   }
   var div_header = document.getElementById("page-header");
   if(rooms.length > 0 ){
-    div_header.innerHTML = "<h1>Rooms</h1>";
+    div_header.innerHTML = "<h1>Rooms<a href='/CreateRoom' class='btn btn-default pull-right'>Add new room</a></h1>";
       var div = document.getElementById("content");
       var table = document.createElement('table');
       table.setAttribute("class","table table-responsible table-hover");
       table.innerHTML = '<thead><tr><th>Image</th><th>Name</th><th>IP</th><th></th></tr></thead>';
 
       for(i = 0 ; i < rooms.length;i++){
-        table.innerHTML += '<tr>'
-              +'<td><img class="img-responsive table-img" src="images/'+rooms[i].name+'.jpg" alt="no image"/></td>'
+        table.innerHTML += '<tr class="table_row">'
+              +'<td class="img_td"><div class="img_div"> <div class="hover_edit_div"><a href="/editRoomPic?id='+rooms[i].id+'">Edit</a></div><img class="img-responsive table-img" src="images/'+rooms[i].name+'.jpg" alt="no image"/></div></td>'
               +'<td>'+rooms[i].name+'</td>'
               +'<td>'+rooms[i].ip+'</td>'
               +'<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal" data-name="'+rooms[i].name+'" data-ip="'+rooms[i].ip+'" data-id="'+rooms[i].id+'">Edit</button></td>'
@@ -41,7 +41,7 @@ xhrGet(REST_DATA , function(data){
 
   }else{
     //No rooms available
-    div_header.innerHTML = "<h1>There is no room registered</h1>";
+    div_header.innerHTML = "<h1>There is no room registered<a href='/CreateRoom' class='btn btn-default pull-right'>Add new room</a></h1>";
   }
   stopLoadingMessage();
 
@@ -58,8 +58,8 @@ xhrGet(REST_DATA , function(data){
 
 
 function showLoadingMessage() {
-	document.getElementById('loadingImage').innerHTML = ""
-			+ "<img height=\"100\" width=\"100\" src=\"images/loading.gif\"></img> Loading data";
+	document.getElementById('loadingImage').innerHTML = "<br>"
+			+ "<img height=\"35\" width=\"35\" src=\"images/loading.gif\"></img> Loading data";
 }
 
 function stopLoadingMessage() {
@@ -80,6 +80,7 @@ $('#editModal').on('show.bs.modal', function (event) {
 });
 
 function updateRoom(){
+  document.getElementById("save_btn").innerHTML = "Saving <img src='images/loader.gif'/>";
   var name = document.getElementById("name_input").value;
   var ip   = document.getElementById("ip_input").value;
   var id   = document.getElementById("hidden_id").value;
