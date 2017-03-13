@@ -2,100 +2,82 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>IBM Tech TVs</title>
-	<link href="style/style.css" rel="stylesheet">
-	<link href="style/bootstrap.min.css" rel="stylesheet">
-
-</head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IBM Tech TVs</title>
+    <link href="style/style.css" rel="stylesheet">
+    <link href="style/bootstrap.min.css" rel="stylesheet"> </head>
 
 <body>
-	<nav class="navbar navbar-default navbar-static-top navbar-inverse">
-		<div class="container-fluid">
-			<!-- Brand and toggle get grouped for better mobile display -->
-			<div class="navbar-header">
-				<a class="navbar-brand" href="/">IBM</a>
-			</div>
-			<!-- /.navbar-collapse -->
-		</div>
-		<!-- /.container-fluid -->
-	</nav>
-	<div class="container">
-		<div class="row">
-			<% if(typeof(error) !== 'undefined') { %>
-				<div class="col-md-10 col-md-offset-1" >
-					<div class="alert alert-warning alert-dismissible" role="alert">
-		  				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		  				 <%= error %>
-					</div>
-				</div>
-			<% }else if(typeof(alertMessage) !== 'undefined' ){ %>
-				<div class="col-md-10 col-md-offset-1" >
-					<div class="alert alert-success alert-dismissible" role="alert">
-							<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-							 <%= alertMessage %>
-					</div>
-				</div>
-				<% } %>
-			<div class="page-header" id="page-header">
-
-			</div>
-			<div id="content">
-
-				<div id="loadingImage"></div>
-			</div>
-		</div>
-	</div>
-	<div id="edit_modal"></div>
-
-
-
-
-	<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="editModal">Edit room info</h4>
-				</div>
-				<div class="modal-body form-horizontal">
-					<div class="form-group">
-						<label for="ip_input" class="col-sm-2 control-label">IP: </label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control ip_input" id="ip_input" placeholder="0.0.0.0">
-						</div>
-					</div>
-					<div class="form-group">
-						<label for="name_input" class="col-sm-2 control-label">Name:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control name_input" id="name_input" placeholder="Name">
-						</div>
-					</div>
-
-					<div class="form-group">
-						<a href="#rafaelApp">Edit image</a>
-					</div>
-					<input type="hidden" id="hidden_id" value=""/>
-
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="button" onclick="updateRoom()" class="btn btn-primary" />Save</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<footer>
-		<p>Copyright &copy; IBM-Brazil</p>
-	</footer>
-
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="scripts/bootstrap.min.js"></script>
-	<script type="text/javascript" src="/scripts/util.js"></script>
-	<script src="scripts/rooms.js"></script>
+    <nav class="navbar navbar-default navbar-static-top navbar-inverse">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header"> <a class="navbar-brand" href="/">IBM</a> </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <div class="container">
+        <div class="row">
+            <% if(typeof(error) !== 'undefined') { %>
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <%= error %>
+                    </div>
+                </div>
+                <% }else if(typeof(alertMessage) !== 'undefined' ){ %>
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class="alert alert-success alert-dismissible"  role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <%= alertMessage %>
+                        </div>
+                    </div>
+                    <% } %>
+                        <div class="page-header"  id="page-header"> </div>
+                        <div id="content">
+                            <div id="loadingImage"></div>
+                        </div>
+        </div>
+    </div>
+    <div id="edit_modal"></div>
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="editModal">Edit room info</h4> </div>
+                <div class="modal-body form-horizontal">
+                    <div class="form-group">
+                        <label for="ip_input" class="col-sm-2 control-label">IP: </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control ip_input" id="ip_input" placeholder="0.0.0.0"> </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name_input" class="col-sm-2 control-label">Name:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control name_input" id="name_input" placeholder="Name"> </div>
+                    </div>
+                    <div class="form-group"> <a href="#rafaelApp">Edit image</a> </div>
+                    <input type="hidden" id="hidden_id" value="" /> </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="updateRoom()" class="btn btn-primary" id="save_btn" />Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>Copyright &copy; IBM-Brazil</p>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/scripts/util.js"></script>
+    <script src="scripts/rooms.js"></script>
 </body>
 
 </html>
