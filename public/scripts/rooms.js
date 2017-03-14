@@ -1,6 +1,7 @@
 
  var REST_DATA = "api/rooms/list";
  var REST_DATA_EDIT = "api/rooms/edit";
+ var REST_DATA_DELETE = "api/rooms/delete";
 
 
 function loadRooms(){
@@ -29,10 +30,11 @@ xhrGet(REST_DATA , function(data){
 
       for(i = 0 ; i < rooms.length;i++){
         table.innerHTML += '<tr class="table_row">'
-              +'<td class="img_td"><div class="img_div"> <div class="hover_edit_div"><a href="/editRoomPic?id='+rooms[i].id+'">Edit</a></div><img class="img-responsive table-img" src="images/'+rooms[i].name+'.jpg" alt="no image"/></div></td>'
+              +'<td class="img_td"><div class="img_div"> <div class="hover_edit_div"><a href="/editRoomPic?id='+rooms[i].id+'">Edit</a></div><img class="img-responsive table-img" src="images/Rooms/'+rooms[i].name+'.jpg" alt="no image"/></div></td>'
               +'<td>'+rooms[i].name+'</td>'
               +'<td>'+rooms[i].ip+'</td>'
-              +'<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal" data-name="'+rooms[i].name+'" data-ip="'+rooms[i].ip+'" data-id="'+rooms[i].id+'">Edit</button></td>'
+              +'<td><a href="#editModal" class="edit_room_link" data-toggle="modal" data-name="'+rooms[i].name+'" data-ip="'+rooms[i].ip+'" data-id="'+rooms[i].id+'"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a> '
+                    +'<a href="#deleteModal" class="delete_room_link" data-toggle="modal" data-id="'+rooms[i].id+'"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>'
               +'</tr>';
       }
 
@@ -79,6 +81,13 @@ $('#editModal').on('show.bs.modal', function (event) {
   document.getElementById("hidden_id").value = id;
 });
 
+$('#deleteModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget)
+  var id = button.data('id');
+  document.getElementById("hidden_delete_id").value = id;
+});
+
+
 function updateRoom(){
   document.getElementById("save_btn").innerHTML = "Saving <img src='images/loader.gif'/>";
   var name = document.getElementById("name_input").value;
@@ -98,6 +107,21 @@ function updateRoom(){
   });
 
 
+}
+
+
+function deleteRoom(){
+    document.getElementById("delete_btn").innerHTML = "Deleting <img src='images/loader.gif'/>";
+    var id   = document.getElementById("hidden_delete_id").value;
+    if (id) {
+		xhrDelete(REST_DATA_DELETE + '?id=' + id, function() {
+			window.location.href="/list";
+		}, function(err) {
+			console.error(err);
+		});
+	} else if (id == null) {
+		
+	}
 }
 
 showLoadingMessage();

@@ -32,19 +32,18 @@
                 </div>
                 <% }else if(typeof(alertMessage) !== 'undefined' ){ %>
                     <div class="col-md-10 col-md-offset-1">
-                        <div class="alert alert-success alert-dismissible"  role="alert">
+                        <div class="alert alert-success alert-dismissible" role="alert">
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <%= alertMessage %>
                         </div>
                     </div>
                     <% } %>
-                        <div class="page-header"  id="page-header"> </div>
+                        <div class="page-header" id="page-header"> </div>
                         <div id="content">
                             <div id="loadingImage"></div>
                         </div>
         </div>
     </div>
-    <div id="edit_modal"></div>
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -67,6 +66,23 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" onclick="updateRoom()" class="btn btn-primary" id="save_btn" />Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Delete room confirmation</h4> </div>
+                <div class="modal-body">
+                    <p>Are you sure that you want to delete this room?</p>
+                    <input type="hidden" id="hidden_delete_id" value="" /> 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="deleteRoom()" class="btn btn-danger" id="delete_btn" />Delete</button>
                 </div>
             </div>
         </div>
