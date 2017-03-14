@@ -333,7 +333,7 @@ app.get('/rooms/img', function (request, response) {
                                         };
                                         console.log('New Room has been added');
                                         fs.linkSync("public/images/default_room.jpg", "public/images/Rooms/" + name + ".jpg");
-                                        img = fs.readFileSync('public/images/' + name + '.jpg');
+                                        img = fs.readFileSync('public/images/Rooms/' + name + '.jpg');
                                     }
                                     doc.rooms = rooms;
                                     console.log(rooms);
@@ -439,6 +439,51 @@ app.get('/rooms', function (request, response) {
                 console.log(err);
             }
         });
+    }
+});
+app.delete('/api/rooms/delete', function (request, response) {
+    console.log('Delete room method invoked..');
+    var id = request.query.id;
+    if (request.session.user_token && request.session.user_token == CLOUDANT_TOKEN) {
+        db.get(CLOUDANT_DOCUMENT_ID, {
+            revs_info: true
+        }, function (err, doc) {
+            if (!err) {
+                var rooms = doc.rooms;
+                for (var room in rooms) {
+                    if (rooms[room]['id'] == id) {
+                        //Remove image from folder.
+                        fs.unlink('public/images/Rooms/' + rooms[room]['name'] + '.jpg', function () {
+                            delete rooms[room];
+                            doc.rooms = rooms;
+                            console.log(doc.rooms);
+                            db.insert(doc, doc.id, function (err, doc) {
+                                if (err) {
+                                    console.log('Error inserting data\n ' + err);
+                                    request.session.error = 'Error on deleting.Try again later!';
+                                    response.write('false');    
+                                    
+                                }else{
+                                request.session.alertMessage = 'Room deleted successfully';
+                                response.write('true');
+                             
+                                    }
+                                   response.end();
+//                                response.redirect('/list');
+                            });
+                        });
+                    }
+                }
+            }
+            else {
+                console.log(err);
+            }
+        });
+    }
+    else {
+        request.session.user_token = '';
+        request.session.error = 'Access denied, try again with a valid token.';
+        response.redirect('/accessDenied');
     }
 });
 http.createServer(app).listen(app.get('port'), '0.0.0.0', function () {
