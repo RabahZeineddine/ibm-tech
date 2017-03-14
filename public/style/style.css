@@ -65,3 +65,17 @@ footer p{
     from{height:0;opacity:0;}
     to{height:90%;opacity:1;}
 }
+
+
+
+.edit_room_link{
+    font-size: 14pt; 
+}
+.delete_room_link, .delete_room_link:visited ,.delete_room_link:active , .delete_room_link:link{
+    color: red;
+    font-size: 14pt;
+}
+
+.delete_room_link:hover{
+    color: #ac0000;
+}
