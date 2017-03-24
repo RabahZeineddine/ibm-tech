@@ -6,16 +6,21 @@ $(document).ready(function(){
   var context = canvas.get(0).getContext("2d");
   var textBounds = $("#text-bounds");
   var backgroundBounds = $("#background-bounds");
+  var txtBackgroundScale = $("#background-scale");
+  var backgroundColorPicker = $("#background-color");
   var txtTextValue = $("#text-value");
   var optFontName = $("#font-name");
   var txtFontSize = $("#font-size");
   var colorPicker = $("#font-color");
   var images = $("#images");
+  var radioTextAlign = $("input[name=text-align]");
 
   /* Image Parameters */
-  var selectedImage = new Image();
-  var imageWidth = selectedImage.width;
-  var imageHeight = selectedImage.height;
+  var selectedImage;
+  var imageWidth;
+  var imageHeight;
+  var backgroundScale = 1.0;
+  var backgroundColor = "#ffffff";
   var text = "IBM";
   var textWidth = 0;
   var textHeight = 0;
@@ -25,6 +30,7 @@ $(document).ready(function(){
   var fontSize = 100;
   var fontColor = "#000000";
   var fontHeight = 0;
+  var textAlign = "left";
   var backgroundOffset = {x: 0, y:0};
   var textOffset = {x: 0, y:0};
 
@@ -68,6 +74,9 @@ $(document).ready(function(){
       imageHeight = imageHeight * (canvas.canvasWidth / imageWidth);
       imageWidth = canvas.canvasWidth;
     }
+    txtBackgroundScale.val("1.0");
+    backgroundScale = 1.0;
+
     backgroundOffset.x = (canvas.canvasWidth - imageWidth) * 0.5
     backgroundOffset.y = (canvas.canvasHeight - imageHeight) * 0.5
     renderAllLayers();
@@ -130,6 +139,59 @@ $(document).ready(function(){
       fontSize = parseInt(this.value.match(/\d+/g));
       renderAllLayers();
     }
+  });
+
+  radioTextAlign.change(function(event) {
+    $("label.text-align").removeAttr("data-checked");
+    $("#" + event.currentTarget.id).parent().attr("data-checked", "true");
+
+    textAlign = this.value;
+    renderAllLayers();
+  });
+
+  backgroundColorPicker.change(function() {
+    backgroundColor = this.value;
+    renderAllLayers();
+  });
+
+  txtBackgroundScale.blur(function() {
+    backgroundScale = this.value.match(/[0-9]+.[0-9][1,2,3,4,5,6,7,8,9]*/g);
+    if (backgroundScale == null || backgroundScale == "") {
+      backgroundScale = 1.0;
+    }
+    backgroundScale = parseFloat(backgroundScale);
+    this.value = backgroundScale;
+    renderAllLayers();
+  });
+
+  txtBackgroundScale.keyup(function(event) {
+    if (event.keyCode >= 48 && event.keyCode <= 57) {
+      backgroundScale = this.value.match(/[0-9]+.[0-9][1,2,3,4,5,6,7,8,9]*/g);
+      backgroundScale = parseFloat(backgroundScale);
+      renderAllLayers();
+    }
+  });
+
+  txtBackgroundScale.keydown(function() {
+    backgroundScale = parseFloat(this.value.match(/[0-9]+.[0-9][1,2,3,4,5,6,7,8,9]*/g));
+
+    if(event.keyCode == 38) {
+      if (event.shiftKey) {
+        backgroundScale += 0.1;
+      }else {
+        backgroundScale += 0.01;
+      }
+      this.value = backgroundScale.toFixed(2);
+    }else if(event.keyCode == 40) {
+      if (event.shiftKey) {
+        backgroundScale -= 0.1;
+      }else {
+        backgroundScale -= 0.01;
+      }
+      this.value = backgroundScale.toFixed(2);
+    }
+
+    renderAllLayers();
   });
 
   /* Moving Events */
@@ -214,34 +276,51 @@ $(document).ready(function(){
   }
 
   function renderBackground() {
+    context.fillStyle = backgroundColor;
+    context.fillRect(0, 0, canvas.canvasWidth, canvas.canvasHeight);
+
+    if (selectedImage == null) {
+      return;
+    }
     var xScale = canvas.canvasWidth / canvas.width();
     var yScale = canvas.canvasHeight / canvas.height();
 
     var x = backgroundOffset.x * yScale;
     var y = backgroundOffset.y * yScale;
 
-    var boundsX = backgroundOffset.x + canvas.position().left;
-    var boundsY = backgroundOffset.y + canvas.position().top;
-    var boundsWidth = canvas.width() - Math.abs(backgroundOffset.x) - 4;
-    var boundsHeight = canvas.height() - Math.abs(backgroundOffset.y) - 4;
+    var boundsX = canvas.position().left + backgroundOffset.x;
+    var boundsY = canvas.position().top + backgroundOffset.y;
+
+    var canvasWidth = canvas.width();
+    var canvasHeight = canvas.height();
+
+    // var boundsWidth = (canvasWidth - Math.abs(backgroundOffset.x) - 4) + (canvasWidth * (backgroundScale - 1));
+    var boundsWidth = canvasWidth * backgroundScale //- Math.abs(backgroundOffset.x) - 4;
+    var boundsHeight = canvasHeight * backgroundScale //- Math.abs(backgroundOffset.y) - 4;
+    // var boundsHeight = (canvasHeight - Math.abs(backgroundOffset.y) - 4) + (canvasHeight * (backgroundScale - 1));
 
     if (boundsX < canvas.position().left) {
+      boundsWidth = boundsWidth - (Math.abs(canvas.position().left - boundsX)) - 4;
       boundsX = canvas.position().left;
     }
-    if (boundsX > canvas.position().left + canvas.width() - 25) {
-      boundsX = canvas.position().left + canvas.width() - 25;
+    if (boundsX > canvas.position().left + canvasWidth - 25) {
+      // boundsX = canvas.position().left + canvasWidth - 25;
     }
     if (boundsY < canvas.position().top) {
       boundsY = canvas.position().top;
     }
-    if (boundsY > canvas.position().top + canvas.height() - 25) {
-      boundsY = canvas.position().top + canvas.height() - 25;
+    if (boundsY > canvas.position().top + canvasHeight - 25) {
+      // boundsY = canvas.position().top + canvasHeight - 25;
     }
     if (boundsWidth < 21) {
-      boundsWidth = 21;
+      // boundsWidth = 21;
+    }else if (boundsWidth > canvasWidth && boundsX + boundsWidth > canvas.position().left + canvasWidth - 4) {
+      // boundsWidth = canvasWidth - Math.abs(backgroundOffset.x) - 4;
     }
     if (boundsHeight < 21) {
-      boundsHeight = 21;
+      // boundsHeight = 21;
+    }else if (boundsHeight > - 4) {
+      // boundsHeight = canvas.position().top + canvasHeight - 4 - booundY;
     }
 
     backgroundBounds.css("left", boundsX + "px");
@@ -249,7 +328,8 @@ $(document).ready(function(){
     backgroundBounds.width(boundsWidth);
     backgroundBounds.height(boundsHeight);
 
-    context.drawImage(selectedImage, x, y, imageWidth, imageHeight);
+    backgroundBounds.css("opacity", "0");
+    context.drawImage(selectedImage, x, y, imageWidth * backgroundScale, imageHeight * backgroundScale);
   }
 
   function renderText() {
@@ -284,7 +364,7 @@ $(document).ready(function(){
 
     context.font = fontSize + 'px "' + fontName + '"';
     context.fillStyle = fontColor;
-    context.textAlign = "center";
+    context.textAlign = textAlign;
 
     wrapText(context, text);
 
@@ -321,10 +401,23 @@ $(document).ready(function(){
     var xScale = canvas.canvasWidth / canvas.width();
     var yScale = canvas.canvasHeight / canvas.height();
 
-    var x = (canvas.position().left - canvas.position().left) * 0.5;
-    x += textBounds.position().left + textBounds.width() * 0.5;
-    x -= canvas.position().left;
-    x *= xScale;
+    var x = 0;
+    if (textAlign == "left") {
+      x = (canvas.position().left - canvas.position().left) * 0.5;
+      x += textBounds.position().left;
+      x -= canvas.position().left;
+      x *= xScale;
+    }else if (textAlign == "center") {
+      x = (canvas.position().left - canvas.position().left) * 0.5;
+      x += textBounds.position().left + textBounds.width() * 0.5;
+      x -= canvas.position().left;
+      x *= xScale;
+    }else if (textAlign == "right") {
+      x = (canvas.position().left - canvas.position().left) * 0.5;
+      x += textBounds.position().left + textBounds.width();
+      x -= canvas.position().left;
+      x *= xScale;
+    }
 
     var y = textBounds.position().top - canvas.position().top + textBounds.height()
     y *= yScale;

@@ -13,17 +13,42 @@
 <section id="tools">
     <section id="text-editor">
         <header>Text Editor</header>
-        <label for="font-name">Font</label>
+        <label for="font-name" class="section-title">Font</label>
         <select id="font-name">
-            <option value="IBMLogo">IBM Logo</option>
             <option value="Arial">Arial</option>
+            <option value="Arial Black">Arial Black</option>
+            <option value="Calibri">Calibri</option>
+            <option value="Comic Sans MS">Comic Sans MS</option>
+            <option value="Courier">Courier</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Futura">Futura</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Gill Sans">Gill Sans</option>
+            <option value="Helvetica">Helvetica</option>
+            <option value="HelveticaNeue">Helvetica Neue</option>
+            <option value="HelveticaNeue-Light">Helvetica Neue - Light</option>
+            <option value="IBMLogo" selected="">IBM Logo</option>
+            <option value="Impact">Impact</option>
+            <option value="Myriad Pro">Myriad Pro</option>
+            <option value="Times New Roman">Times New Roman</option>
             <option value="Verdana">Verdana</option>
         </select>
-        <input  type="text" id="font-size" value="60" />
+
+        <label for="text-align-left" class="text-align" data-checked="true"><input type="radio" id="text-align-left" name="text-align" value="left" checked /></label>
+        <label for="text-align-center" class="text-align"><input type="radio" id="text-align-center" name="text-align" value="center" /></label>
+        <label for="text-align-right" class="text-align"><input type="radio" id="text-align-right" name="text-align" value="right" /></label>
+
+        <input  type="text"id="font-size" value="60" />
         <input type="color" id="font-color" value="#000000" />
 
-        <label for="text-value">Text</label>
+        <label for="text-value" class="section-title">Text</label>
         <textarea id="text-value"></textarea>
+    </section>
+
+    <section id="background">
+        <header>Background</header>
+        <label for="background-scale">Scale: <input  type="text" id="background-scale" value="1.0" /></label>
+        <label for="background-color">Color: <input type="color" id="background-color" value="#ffffff" /></label>
     </section>
 
     <section id="gallery">

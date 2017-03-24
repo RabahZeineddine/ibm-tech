@@ -7,7 +7,7 @@
 	 src: url("../fonts/ibm-logo.ttf");
  }
 
-*{
+p, img, figure, figcaption, div, canvas, header, section, label, html {
   outline:none;
   -webkit-user-select: none;
  	-moz-user-select:none;
@@ -111,6 +111,11 @@ header {
 	vertical-align: top;
 }
 
+#text-editor label.section-title {
+	display: block;
+  padding: 0px 5px 5px 5px;
+}
+
 #text-editor textarea#text-value {
 	width: 98%;
 	max-width: 98%;
@@ -118,45 +123,125 @@ header {
 	height: 64px;
 	max-height: 64px;
 	min-height: 64px;
+  font-size: 19px;
+  border: none;
+  background: #ffffff;
+  border-radius: 3.5px;
 }
 
 #text-editor select {
-	width: 70.0%;
-	height: 32px;
+	width: 106.75px;
+	height: 32.25px;
 	margin-bottom: 0.5em;
 	text-align: center;
-}
-
-#text-editor label {
-	display: block;
+  font-size: 14px;
+  border: solid 3px #ffffff;
+  background: #ffffff;
+  border-radius: 3.5px;
 }
 
 #text-editor #font-color {
-	vertical-align: middle;
+	vertical-align: top;
 	width: 12.0%;
-	height: 31px;
+	height: 32px;
 	padding: 0;
 	margin: 0;
 	text-align: center;
+  border: none;
+  background: #ffffff;
+  border-radius: 3.5px;
 }
 
 #text-editor #font-size {
-	vertical-align: middle;
+	vertical-align: top;
 	width: 39.0px;
-	height: 28px;
+	height: 32px;
 	padding: 0;
 	margin: 0;
 	text-align: center;
+  font-size: 14px;
+  border: none;
+  background: #ffffff;
+  border-radius: 3.5px;
+}
+
+.text-align input[type="radio"] {
+  display: none;
+}
+
+label[for="text-align-left"] {
+  background: url(../images/image_editor/icon_align_left.png) no-repeat;
+}
+
+label[for="text-align-center"] {
+  background: url(../images/image_editor/icon_align_center.png) no-repeat;
+}
+
+label[for="text-align-right"] {
+  background: url(../images/image_editor/icon_align_right.png) no-repeat;
+}
+
+label.text-align {
+  vertical-align: top;
+  display: inline-block;
+  border-radius: 3.5px;
+
+  width: 30px;
+  height: 30px;
+
+  background-size: 60%;
+  background-position: center;
+  background-color: #eee;
+  border: solid 1px #ccc;
+}
+label.text-align[data-checked="true"] {
+  border: solid 1px #000000;
+  background-color: #ffffff;
+}
+
+/*** Background Settings ***/
+#background {
+  margin-top: 1em;
+  /*margin-bottom: 0.5em;*/
+}
+
+#background #background-scale {
+	vertical-align: middle;;
+	width: 39.0px;
+	height: 32px;
+	padding: 0;
+	margin: 0;
+	text-align: center;
+  font-size: 14px;
+  border: none;
+  background: #ffffff;
+  border-radius: 3.5px;
+}
+
+#background #background-color {
+	vertical-align: middle;;
+	width: 12.0%;
+	height: 32px;
+	padding: 0;
+	margin: 0;
+	text-align: center;
+  border: none;
+  background: #ffffff;
+  border-radius: 3.5px;
+}
+
+#background label {
+  padding: 0px 5px 5px 5px;
 }
 
 /*** GALLERY ***/
 #gallery {
-	margin-top: 2em;
+	margin-top: 1.0em;
 	vertical-align: top;
 }
 
 #gallery #images {
-	max-height: 358.75px;
+	max-height: 285.75px;
 	min-width: 320.5px;
 	overflow-x: none;
 	overflow-y: auto;
